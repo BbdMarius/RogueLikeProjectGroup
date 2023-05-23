@@ -1,6 +1,5 @@
 from Element import Element
 import theGame
-
 class Creature(Element):
     """A creature that occupies the dungeon.
         Is an Element. Has hit points and strength."""
