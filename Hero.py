@@ -8,10 +8,13 @@ class Hero(Creature):
     def __init__(self, name="Hero", hp=10, abbrv="@", strength=2):
         Creature.__init__(self, name, hp, abbrv, strength)
         self._inventory = []
-
+        self.level: int = 0
+        self.xp_cap: int = 10
+        self.xp: int = 0
+        
     def description(self):
         """Description of the hero"""
-        return Creature.description(self) +"armure:"+ str(self.armure)+ str(self._inventory)
+        return Creature.description(self) +"armure:"+ str(self.armure)+ str(self._inventory) + " exp:%s/%s" % (self.xp, self.xp_cap)
 
     def fullDescription(self):
         """Complete description of the hero"""
@@ -41,3 +44,26 @@ class Hero(Creature):
             raise ValueError('Equipment ' + elem.name + 'not in inventory')
         if elem.use(self):
             self._inventory.remove(elem)
+    
+    def earn_xp(self, xp_amount):
+        self.xp += xp_amount
+        while self.xp >= self.xp_cap:
+            self.xp -= self.xp_cap
+            self.level_up()
+    
+    def level_up(self):
+        if self.level % 2 == 0:
+            self.max_hp += 2
+            self.strength += 1
+        else:
+            self.max_hp += 3
+        self.level += 1
+        self.hp = self.max_hp
+        self.xp_cap += 10 + 5*self.level
+
+    def meet(self, other):
+        self.hp -= other.strength
+        theGame().addMessage("The " + other.name + " hits the " + self.description())
+        if self.hp > 0:
+            return False
+        return True
